@@ -16,6 +16,7 @@ function HomeContainer({user}) {
   const [category_status, setCategoryStatus] = useState(null);
   const [admins, setAdmins] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [adding_category, setAddingCategory] = useState(false);
 
   const fetchAdmin = () => {
     setAdminStatus('loading');
@@ -45,6 +46,23 @@ function HomeContainer({user}) {
     setShowAddAdminForm(true);
   };
 
+  const addCategory = () => {
+    const title = prompt('Название?');
+    if (title && title.trim().length > 0) {
+      setAddingCategory(true);
+      firestore.collection('categories').add({
+        title,
+      }).then(response => {
+        console.log(response);
+        setCategories([...categories, {title}]);
+      }).catch(e => {
+        console.log(e);
+      }).finally(() => {
+        setAddingCategory(false);
+      });
+    }
+  };
+
   useEffect(() => {
     fetchAdmin();
     fetchCategory();
@@ -58,7 +76,7 @@ function HomeContainer({user}) {
         <div>
           <div className={'d-flex justify-content-between align-items-center'}>
             <h3 className={'my-2'}>Категории{category_status === 'success' ? ` (${categories.length})` : ''}</h3>
-            <Button color="success" disabled={category_status !== 'success'} type="button">Добавить</Button>
+            <Button onClick={() => addCategory()} color="success" disabled={category_status !== 'success' || adding_category} type="button">Добавить</Button>
           </div>
           {category_status === 'success' && categories.length > 0 && (
             <>
