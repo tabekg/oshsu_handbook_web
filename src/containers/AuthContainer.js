@@ -34,11 +34,11 @@ function AuthContainer() {
 
   const signIn = () => {
     setStatus('checking');
-    firestore.collection('admins').where('phone_number', '==', phoneNumber).get().then((querySnapshot) => {
+    firestore.collection('admins').where('phone_number', '==', `+${phoneNumber}`).get().then((querySnapshot) => {
       if (querySnapshot.size > 0) {
         setStatus('signing');
         const appVerifier = window.recaptchaVerifier;
-        auth.signInWithPhoneNumber(phoneNumber, appVerifier).then((confirmationResult) => {
+        auth.signInWithPhoneNumber(`+${phoneNumber}`, appVerifier).then((confirmationResult) => {
           window.confirmationResult = confirmationResult;
           setStatus('sent');
         }).catch((error) => {
@@ -123,7 +123,7 @@ function AuthContainer() {
                   <Button disabled={
                     ['checking', 'verifying', 'signing'].includes(status) ||
                     (status === 'sent' && verificationCode.length !== 6) ||
-                    (status === '' && phoneNumber.length !== 13)
+                    (status === '' && phoneNumber.length !== 12)
                   } id={'sign-in-button'} onClick={() => submit()} color="primary" block type="button">
                     Войти в систему
                   </Button>
