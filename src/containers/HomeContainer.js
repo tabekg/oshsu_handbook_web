@@ -22,7 +22,7 @@ function HomeContainer({user}) {
     setAdminStatus('loading');
     firestore.collection('admins').get().then((result) => {
       console.log(result);
-      setAdmins(result.docs.map(v => v.data()));
+      setAdmins(result.docs.map(v => ({...v.data(), id: v.id})));
       setAdminStatus('success');
     }).catch(e => {
       console.log(e);
@@ -70,9 +70,13 @@ function HomeContainer({user}) {
 
   return (
     <>
-      <AddAdminModalComponent show={show_add_admin_form} toggle={() => setShowAddAdminForm(!show_add_admin_form)} />
+      <AddAdminModalComponent
+        onAdded={data => setAdmins([...admins, data])}
+        show={show_add_admin_form}
+        toggle={() => setShowAddAdminForm(!show_add_admin_form)}
+      />
 
-      <Container>
+      <Container className={'mb-3'}>
         <div>
           <div className={'d-flex justify-content-between align-items-center'}>
             <h3 className={'my-2'}>Категории{category_status === 'success' ? ` (${categories.length})` : ''}</h3>
@@ -94,7 +98,7 @@ function HomeContainer({user}) {
           {admin_status === 'success' && admins.length > 0 && (
             <>
               {admins.map((v, k) => (
-                <AdminItemComponent key={k} data={v} />
+                <AdminItemComponent onDeleted={(id) => setAdmins(admins.filter(v => v.id !== id))} key={v.id} data={v} />
               ))}
             </>
           )}
