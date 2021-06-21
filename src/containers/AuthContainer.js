@@ -34,7 +34,7 @@ function AuthContainer() {
 
   const signIn = () => {
     setStatus('checking');
-    firestore.collection('admins').where('phone_number', '==', `+${phoneNumber}`).get().then((querySnapshot) => {
+    firestore.collection('admins').where('phone_number', '==', phoneNumber).get().then((querySnapshot) => {
       if (querySnapshot.size > 0) {
         setStatus('signing');
         const appVerifier = window.recaptchaVerifier;

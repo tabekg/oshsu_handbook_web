@@ -9,8 +9,8 @@ import {
 } from "reactstrap";
 import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
 
-
 const auth = firebase.auth();
+const firestore = firebase.firestore();
 
 function AppContainer() {
   const [user, setUser] = useState(null);
@@ -19,11 +19,24 @@ function AppContainer() {
   auth.onAuthStateChanged((u) => {
     if (u) {
       setUser(u);
+      checkUser().then();
     } else {
-      console.log('no user');
+      setUser(null);
     }
     setStatus('loaded');
   });
+
+  const checkUser = async () => {
+    if (!user) return;
+    try {
+      const r = await firestore.collection('admins').where('phone_number', '==', user.phoneNumber.slice(1)).get();
+      if (r.size < 1) {
+        await auth.signOut();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   if (status === 'loading') {
     return <h1>Please, wait!</h1>;

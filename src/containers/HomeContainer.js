@@ -34,7 +34,7 @@ function HomeContainer({user}) {
     setCategoryStatus('loading');
     firestore.collection('categories').get().then((result) => {
       console.log(result);
-      setCategories(result.docs.map(v => v.data()));
+      setCategories(result.docs.map(v => ({...v.data(), id: v.id})));
       setCategoryStatus('success');
     }).catch(e => {
       console.log(e);
@@ -84,8 +84,8 @@ function HomeContainer({user}) {
           </div>
           {category_status === 'success' && categories.length > 0 && (
             <>
-              {categories.map((v, k) => (
-                <CategoryItemComponent key={k} data={v} />
+              {categories.map((v) => (
+                <CategoryItemComponent key={v.id} data={v} />
               ))}
             </>
           )}
@@ -97,7 +97,7 @@ function HomeContainer({user}) {
           </div>
           {admin_status === 'success' && admins.length > 0 && (
             <>
-              {admins.map((v, k) => (
+              {admins.map((v) => (
                 <AdminItemComponent onDeleted={(id) => setAdmins(admins.filter(v => v.id !== id))} key={v.id} data={v} />
               ))}
             </>
