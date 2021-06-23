@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {
   Button,
-  Container,
+  Container, Spinner,
 } from "reactstrap";
 import firebase from "../utils/firebase";
 import AddAdminModalComponent from "../components/AddAdminModalComponent";
@@ -68,6 +68,13 @@ function HomeContainer({user}) {
     fetchCategory();
   }, []);
 
+  const setCategory = (e) => {
+    setCategories(categories.map(v => {
+      if (e.id === v.id) return e;
+      return v;
+    }));
+  };
+
   return (
     <>
       <AddAdminModalComponent
@@ -85,9 +92,14 @@ function HomeContainer({user}) {
           {category_status === 'success' && categories.length > 0 && (
             <>
               {categories.map((v) => (
-                <CategoryItemComponent key={v.id} data={v} />
+                <CategoryItemComponent key={v.id} onUpdate={e => setCategory(e)} data={v} />
               ))}
             </>
+          )}
+          {category_status === 'loading' && (
+            <div className={'d-flex justify-content-center align-items-center'} style={{height: '20vh'}}>
+              <Spinner color="primary" />
+            </div>
           )}
         </div>
         <div>
@@ -101,6 +113,11 @@ function HomeContainer({user}) {
                 <AdminItemComponent onDeleted={(id) => setAdmins(admins.filter(v => v.id !== id))} key={v.id} data={v} />
               ))}
             </>
+          )}
+          {admin_status === 'loading' && (
+            <div className={'d-flex justify-content-center align-items-center'} style={{height: '20vh'}}>
+              <Spinner color="primary" />
+            </div>
           )}
         </div>
       </Container>
